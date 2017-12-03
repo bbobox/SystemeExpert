@@ -1,0 +1,6 @@
+age=50
+#chirurgie
+vision=déformé
+#peau_sur_oeil
+gêné
+myope

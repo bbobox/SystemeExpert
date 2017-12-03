@@ -1,0 +1,11 @@
+1:vision=mauvais_loin->myope&gêné
+2:vision=mauvais_près->hypermétrope&gêné
+3:vision=déformé->astigmate
+# age=? signifie que age attend une valeur ? (la valeur fixe doit etre apres ?)
+4:age=?>_45&vision=déformé->presbyte&gêné
+5:peau_sur_oeil->cataracte
+6:myope->lunettes
+7:hypermétrope->lunettes
+8:astigmate&gêné->lunettes
+9:presbyte->lunettes
+10:cataracte&gêné->chirurgie
