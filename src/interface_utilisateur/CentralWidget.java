@@ -214,20 +214,57 @@ public class CentralWidget extends JPanel {
 		se.clearLists();
 		se.fillRegle(pathRegle);
 		se.fillFait(pathFait);
+		String montextRes="";
 		if (chainageChoix.getItemAt(chainageChoix.getSelectedIndex()).contains("largeur")){
 			boolean oklarg=se.chainAvantLargeur(new Fait(txtField.getText(), ""));
-			txtArea.setText(se.recupNiveauxLargeur());
+			//txtArea.setText(se.recupNiveauxLargeur());
+			if (oklarg==true) {
+				montextRes=se.recupNiveauxLargeur();
+				//txtArea.setText(se.recupNiveauxLargeur());
+				montextRes=montextRes+"  Le but <<"+txtField.getText()+">> a été atteint";
+				txtArea.setText(montextRes);
+				//System.out.print("/n n/  Le but <<");  System.out.print(txtField.getText()); System.out.print(">> a été atteint");
+				
+			}
+			else{
+				montextRes=se.recupNiveauxLargeur();
+				//txtArea.setText(se.recupNiveauxLargeur());
+				montextRes=montextRes+"  Le but <<"+txtField.getText()+">> n'a pas été atteint";
+				txtArea.setText(montextRes);
+			}
 			return oklarg;
 		}
 		else if (chainageChoix.getItemAt(chainageChoix.getSelectedIndex()).contains("profondeur")){
 			
 			boolean okprof =se.chainAvantProfondeur(new Fait(txtField.getText(), ""));
-			txtArea.setText(se.recuPNiveauxProfondeur());
+			//txtArea.setText(se.recuPNiveauxProfondeur());
+			if(okprof==true){
+				montextRes=se.recuPNiveauxProfondeur();
+				
+				montextRes=montextRes+"  Le but <<"+txtField.getText()+">> a été atteint";
+				txtArea.setText(montextRes);
+			}
+			else{
+				montextRes=se.recuPNiveauxProfondeur();
+				montextRes=montextRes+"  Le but <<"+txtField.getText()+">> n'a pas été atteint";
+				txtArea.setText(montextRes);
+			}
+			
 			return okprof;
 		}
 		else{
 			boolean ok= se.chainageArriere(new Fait(txtField.getText(), ""));
-			txtArea.setText(se.recupTraceChainageArriere());
+			//txtArea.setText(se.recupTraceChainageArriere());
+			if(ok==true){
+				montextRes=se.recupTraceChainageArriere();
+				montextRes=montextRes+"  Le but <<"+txtField.getText()+">> a été atteint";
+				txtArea.setText(montextRes);
+			}
+			else{
+				montextRes=se.recupTraceChainageArriere();
+				montextRes=montextRes+"  Le but <<"+txtField.getText()+">> n'a pas été atteint";
+				txtArea.setText(montextRes);
+			}
 			
 			return ok;
 		}

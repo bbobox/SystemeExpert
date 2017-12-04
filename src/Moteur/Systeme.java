@@ -36,6 +36,8 @@ public class Systeme {
 		traceChainageArrière= new String();
 	}
 	
+
+	
 	
 	/**
 	 * Remplissage de la base de Regle
