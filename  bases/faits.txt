@@ -1,4 +1,4 @@
-age=50
+age=25
 #chirurgie
 vision=déformé
 #peau_sur_oeil

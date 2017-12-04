@@ -2,6 +2,7 @@ package Moteur;
 
 import java.util.ArrayList;
 
+
 /**
  * Le systeme Expert se sert de la base de connaissance ( base et  faits et base de regle ), et utilise son moteur d'inferences
  * 	(chainage avant, chainage arrière) realiser une deduction . 
@@ -14,6 +15,11 @@ public class Systeme {
 	private ArrayList<Fait> baseFait; // base de fait
 	private LecteurFichier filler; // Lecteur de fichier descripteurs et remplisseur de bases 
 	
+	private String textTrace;
+	private ArrayList<ArrayList<Fait>> niveauxProfondeur; 
+	private ArrayList<ArrayList<Fait>> niveauxLargeur; 
+	private String traceChainageArrière;
+	
 	public Systeme( ArrayList<Regle> regles, ArrayList<Fait> faits) {
 		baseFait =faits;
 		baseRegle = regles;
@@ -23,7 +29,13 @@ public class Systeme {
 		baseFait = new ArrayList<Fait>();
 		baseRegle =new  ArrayList<Regle>();
 		filler= new LecteurFichier();
+		textTrace=new String();
+		niveauxProfondeur=new ArrayList<ArrayList<Fait>>();
+		niveauxLargeur=new ArrayList<ArrayList<Fait>>();
+		
+		traceChainageArrière= new String();
 	}
+	
 	
 	/**
 	 * Remplissage de la base de Regle
@@ -33,12 +45,39 @@ public class Systeme {
 		filler.fillBaseRegle(baseRegle, filePath);
 	}
 	
+	
+	public String   recuPNiveauxProfondeur(){
+		String res= "";
+		for(int i=0; i<niveauxProfondeur.size();i++){
+			String nivI= "NIVEAU "+String.valueOf(i)+": \n";
+			res=res+nivI;
+			for(int j=0; j<niveauxProfondeur.get(i).size();j++){
+				Fait fJ=niveauxProfondeur.get(i).get(j);
+				if(fJ.getValeur().equals(new String(""))==true){
+					res=res+"\t -"+fJ.getAttribut()+"\n";
+				}
+				else{
+					res=res+"\t -"+fJ.getAttribut()+"="+fJ.getValeur()+"\n";
+				}
+			}
+		}
+		
+		return res;
+	}
+	
+	public String recupTraceChainageArriere(){
+		
+		return traceChainageArrière;
+	}
+	
 	/**
 	 * Remplissage de la base de fait
 	 * @param filePath
 	 */
 	public void fillFait(String filePath) {
 		filler.fillBaseFait(baseFait, filePath);
+		
+		
 	}
 	
 	/**
@@ -143,6 +182,12 @@ public class Systeme {
 	public boolean chainAvantProfondeur(Fait fait) {
 		// 1-On verifie d'abord si le fait à deduire n'est pas deja dans la base  de fait
 		boolean ret = true; // variabe boleenne qui renvoi le resulat de la liste;
+		niveauxProfondeur.clear();
+		ArrayList<Fait> NivZero= new ArrayList<Fait>();
+		for(int i=0;i<baseFait.size();i++){
+			NivZero.add(baseFait.get(i));
+		}
+		niveauxProfondeur.add(NivZero);
 
 		if (!baseFait.contains(fait)) { // Si le fait n'est pas dans la base de fait
 			ret = false;
@@ -160,9 +205,13 @@ public class Systeme {
 			if (testAjout) {
 				System.out.print(" Au Niveau" + niv + " : Les faits declenclés sont  :");
 				int tbf = baseFait.size();
+				ArrayList<Fait> faitsAjout=new ArrayList<Fait>();
 				for (int i = tbfInit; i < tbf; i++) {
 					baseFait.get(i).afficheFait();
+					faitsAjout.add(baseFait.get(i));
 				}
+				niveauxProfondeur.add(faitsAjout);
+				
 				System.out.println("");
 				niv++;
 				tbfInit = tbf;
@@ -284,10 +333,18 @@ public class Systeme {
 		// Utilisation de br
 		//ArrayList<Regle> br = baseReglecopie(baseRegle, baseFait);
 		ArrayList<Regle> br = new ArrayList<Regle>(baseRegle);
-
+		
 		System.out.print("chainage arrière sur: ");
 		fait.afficheFait();
 		System.out.println();
+		
+		if(fait.getValeur().equals(new String(""))==true){
+			traceChainageArrière=traceChainageArrière+"chainage arrière sur: "+fait.getAttribut()+"\n";
+		}
+		else{
+			traceChainageArrière=traceChainageArrière+"chainage arrière sur: "+fait.getAttribut()+"="+fait.getValeur()+"\n";
+		}
+		
 		boolean ret = true;
 		if (baseFait.contains(fait)) {
 			ret = true;
@@ -310,8 +367,42 @@ public class Systeme {
 
 			// affiche des regles qui declenche le fait à verififier
 			System.out.print("affichage des regles qui declenchent : "); fait.afficheFait(); System.out.println();
+			
+			if(fait.getValeur().equals(new String(""))==true){
+				traceChainageArrière=traceChainageArrière+"affichage des regles qui declenchent : "+fait.getAttribut()+"\n";
+			}
+			else{
+				traceChainageArrière=traceChainageArrière+"affichage des regles qui declenchent : "+fait.getAttribut()+"="+fait.getValeur()+"\n";
+			}
 
 			afficheListRegle(eRegle);
+			//recuperation de la list des Regle
+			for(int i=0;i<eRegle.size();i++){
+				// recuperation des premisses
+				ArrayList<Fait> P= eRegle.get(i).recupPremisses();
+				traceChainageArrière=traceChainageArrière+"\t -";
+				for(int j=0;j<P.size();j++){
+					if(P.get(j).getValeur().equals(new String(""))==true){
+						traceChainageArrière=traceChainageArrière+P.get(j).getAttribut()+" & ";
+					}
+					else{
+						traceChainageArrière=traceChainageArrière+P.get(j).getAttribut()+"="+P.get(j).getValeur()+" & ";
+					}
+				}
+				traceChainageArrière=traceChainageArrière+"		alors	";
+				
+				ArrayList<Fait> CQ= eRegle.get(i).recupConsequences();
+				
+				for(int j=0;j<CQ.size();j++){
+					if(CQ.get(j).getValeur().equals(new String(""))==true){
+						traceChainageArrière=traceChainageArrière+CQ.get(j).getAttribut()+" & ";
+					}
+					else{
+						traceChainageArrière=traceChainageArrière+CQ.get(j).getAttribut()+"="+CQ.get(j).getValeur()+" & ";
+					}
+				}
+				traceChainageArrière=traceChainageArrière+"\n";
+			}
 
 			if (eRegle.isEmpty()) {
 				ret = false;
@@ -344,26 +435,35 @@ public class Systeme {
 			System.out.print("chainage arrière  de: ");
 			fait.afficheFait();
 			System.out.println("est reussi ");
+			
+			if(fait.getValeur().equals(new String(""))==true){
+				traceChainageArrière=traceChainageArrière+"chainage arrière  de: "+fait.getAttribut()+" est reussi \n";
+			}
+			else{
+				traceChainageArrière=traceChainageArrière+"chainage arrière  de:  "+fait.getAttribut()+"="+fait.getValeur()+" est reussi \n";
+			}
 
 		}
 		return ret;
 	}
 	
-	
+/*	
 	public static void main(String[] args) {
 		Systeme s = new Systeme();
 		Fait f= new Fait("bonjour","bonsoir");
 		//f.afficheFait();
-		/*System.err.println("Apres chainage -> "
-				+ s.chainAvantLargeur(new Premisse("lunettes", "")));
-		s.affichebaseFait(); */
-		/* Remplissage de la base de connaissance */
+		//System.err.println("Apres chainage -> "
+		//		+ s.chainAvantLargeur(new Premisse("lunettes", "")));
+		//s.affichebaseFait(); 
+		/// Remplissage de la base de connaissance 
 	   s.fillFait("faits.txt");
 	   s.fillRegle("regles.txt");
 		//Fait f=s.baseFait.get(1);
 	//	boolean ca=s.chainageArriere(new Fait("lunettes", ""));
-		boolean caprof=s.chainAvantLargeur(new Fait("lunettes", ""));
-		System.out.println(caprof);
+		boolean caprof=s.chainageArriere(new Fait("lunettes", ""));
+		System.out.println(s.recupTraceChainageArriere());
+		
+		//recuPNiveauxProfondeur()
 	}
-
+*/
 }
