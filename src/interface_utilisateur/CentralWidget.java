@@ -215,7 +215,9 @@ public class CentralWidget extends JPanel {
 		se.fillRegle(pathRegle);
 		se.fillFait(pathFait);
 		if (chainageChoix.getItemAt(chainageChoix.getSelectedIndex()).contains("largeur")){
-			return se.chainAvantLargeur(new Fait(txtField.getText(), ""));
+			boolean oklarg=se.chainAvantLargeur(new Fait(txtField.getText(), ""));
+			txtArea.setText(se.recupNiveauxLargeur());
+			return oklarg;
 		}
 		else if (chainageChoix.getItemAt(chainageChoix.getSelectedIndex()).contains("profondeur")){
 			

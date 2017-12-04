@@ -65,6 +65,26 @@ public class Systeme {
 		return res;
 	}
 	
+	
+	public String   recupNiveauxLargeur(){
+		String res= "";
+		for(int i=0; i<niveauxLargeur.size();i++){
+			String nivI= "NIVEAU "+String.valueOf(i)+": \n";
+			res=res+nivI;
+			for(int j=0; j<niveauxLargeur.get(i).size();j++){
+				Fait fJ=niveauxLargeur.get(i).get(j);
+				if(fJ.getValeur().equals(new String(""))==true){
+					res=res+"\t -"+fJ.getAttribut()+"\n";
+				}
+				else{
+					res=res+"\t -"+fJ.getAttribut()+"="+fJ.getValeur()+"\n";
+				}
+			}
+		}
+		
+		return res;
+	}
+	
 	public String recupTraceChainageArriere(){
 		
 		return traceChainageArrière;
@@ -242,6 +262,7 @@ public class Systeme {
 		int i = 0;
 		/* On parcours la base de regle */
 		int cpt = 0;
+		
 
 		ArrayList<Fait> listFait = new ArrayList<Fait>(); // List dans laquelle on stock les fait declenchés
 
@@ -290,6 +311,13 @@ public class Systeme {
 	 */
 
 	public boolean chainAvantLargeur(Fait fait) {
+		niveauxLargeur.clear();
+		ArrayList<Fait> NivZero= new ArrayList<Fait>();
+		for(int t=0;t<baseFait.size();t++){
+			NivZero.add(baseFait.get(t));
+		}
+		niveauxLargeur.add(NivZero);
+		
 		// 1-On verifie d'abord si le fait à deduire n'est pas deja dans la base de fait
 		boolean ret = true; // variabe boleenne qui renvoi le resulat de la liste;
 		if (!baseFait.contains(fait)) { // Si le fait n'est pas dans la base de fait
@@ -302,15 +330,22 @@ public class Systeme {
 			// On remplit la base de fait grace à la fonction de remplissage
 			ArrayList<Fait> listPremisse = remplissageBaseFaitLargeur(); // Renvoie la liste des faits ajoutés
 			// affichage de ces faits si le nb de faits est superieur à 0
-			int nbPremisse = listPremisse.size(); // ta taile de la liste des faits ajoutés
+			int nbPremisse = listPremisse.size(); // la taile de la liste des faits ajoutés
 			if (nbPremisse > 0) {
 				System.out.print(" Au Niveau" + (t + 1)	+ " : Les faits declenclés sont  :");
+				ArrayList<Fait> faitsAjout=new ArrayList<Fait>();
 				for (int i = 0; i < nbPremisse; i++) {
 					listPremisse.get(i).afficheFait();
-					if (!baseFait.contains(listPremisse.get(i)))
+					if (!baseFait.contains(listPremisse.get(i))){
 						baseFait.add(listPremisse.get(i));
+					    faitsAjout.add(listPremisse.get(i));
+					 }
+					
 				}
+				niveauxLargeur.add(faitsAjout);
 				System.out.println("");
+				
+				
 			}
 
 			if (!baseFait.contains(fait)) {
